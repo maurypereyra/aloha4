@@ -60,7 +60,7 @@ public class Solution {
     static class Directory implements FileEntity {
         private String name;
         private Directory parent;
-        private Map<String, FileEntity> childs = new HashMap<>();
+        private Map<String, FileEntity> children = new HashMap<>();
 
         private static final String SLASH = "/";
 
@@ -85,14 +85,17 @@ public class Solution {
         }
 
         public String getFullPath() {
+            String fullPath = "";
             if (this.getParent() == null) {
-                return SLASH + this.name;
+                fullPath = SLASH + this.name;
+            } else {
+                List<String> directories = new ArrayList<>();
+                Directory current = this;
+                fillDirectoriesList(directories, current);
+                fullPath = SLASH + String.join(SLASH, directories);
             }
-            List<String> directories = new ArrayList<>();
-            Directory current = this;
-            fillDirectoriesList(directories, current);
 
-            return SLASH + String.join(SLASH, directories);
+            return fullPath;
         }
 
         private void fillDirectoriesList(List<String> directories, Directory current) {
@@ -102,6 +105,19 @@ public class Solution {
             }
 
             Collections.reverse(directories);
+        }
+
+        public Boolean createSubdirectory(String dirName) {
+            if (this.containsChild(dirName)) {
+                return false;
+            }
+
+            Directory newDir = new Directory(dirName, this);
+            return children.put(dirName, newDir) == null;
+        }
+
+        private Boolean containsChild(String childName) {
+            return children.containsKey(childName);
         }
     }
 
@@ -167,12 +183,19 @@ public class Solution {
     }
     static class MkdirCommand implements Command {
         private String argument;
+        private static final String ERROR_MESSAGE_INVALID_NAME = "Invalid File or Folder Name";
+        private static final String ERROR_MESSAGE_DIRECTORY_ALREADY_EXISTS = "Directory already exists";
 
         public MkdirCommand(String argument) {
+            if (argument.length() > 100) {
+                throw new RuntimeException(ERROR_MESSAGE_INVALID_NAME);
+            }
+            this.argument = argument;
         }
 
         public String execute(FileSystem fs) {
-            return "TBD";
+            Boolean success = fs.getCurrent().createSubdirectory(argument);
+            return (success) ? "" : ERROR_MESSAGE_DIRECTORY_ALREADY_EXISTS;
         }
     }
     static class TouchCommand implements Command {
