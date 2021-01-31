@@ -119,6 +119,43 @@ public class Solution {
         private Boolean containsChild(String childName) {
             return children.containsKey(childName);
         }
+
+        public Boolean createFile(String fileName) {
+            if (this.containsChild(fileName)) {
+                return false;
+            }
+
+            File file = new File(fileName, this);
+            return children.put(fileName, file) == null;
+        }
+
+    }
+
+    static class File implements FileEntity {
+        private static final long serialVersionUID = 1L;
+
+        private String name;
+        private Directory parent;
+
+        public File(String name, Directory parent) {
+            this.name = name;
+            this.parent = parent;
+        }
+
+        @Override
+        public Directory getParent() {
+            return this.parent;
+        }
+
+        @Override
+        public FileEntityType getEntityType() {
+            return FileEntityType.File;
+        }
+
+        @Override
+        public String getName() {
+            return this.name;
+        }
     }
 
     static interface FileEntity {
@@ -200,12 +237,19 @@ public class Solution {
     }
     static class TouchCommand implements Command {
         private String argument;
+        private static final String ERROR_MESSAGE_INVALID_NAME = "Invalid File or Folder Name";
+        private static final String ERROR_MESSAGE_FILE_ALREDY_EXISTS = "File already exists";
 
         public TouchCommand(String argument) {
+            if (argument.length() > 100) {
+                throw new RuntimeException(ERROR_MESSAGE_INVALID_NAME);
+            }
+            this.argument = argument;
         }
 
         public String execute(FileSystem fs) {
-            return "TBD";
+            Boolean success = fs.getCurrent().createFile(argument);
+            return (success) ? "" : ERROR_MESSAGE_FILE_ALREDY_EXISTS;
         }
     }
 
