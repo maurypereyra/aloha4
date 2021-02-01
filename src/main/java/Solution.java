@@ -62,6 +62,9 @@ public class Solution {
         private Directory parent;
         private Map<String, FileEntity> children = new HashMap<>();
 
+        public static final String ERROR_MESSAGE_INVALID_PATH = "Invalid path";
+
+
         private static final String SLASH = "/";
 
         public Directory(String name, Directory parent) {
@@ -129,6 +132,24 @@ public class Solution {
             return children.put(fileName, file) == null;
         }
 
+        public FileEntity getSubDir(String[] dirNames) {
+            FileEntity current = this;
+
+            for (String dirName : dirNames) {
+                FileEntity child = ((Directory) current).getSubDir(dirName);
+
+                if (child == null || child.getEntityType() == FileEntityType.File) {
+                    throw new RuntimeException(ERROR_MESSAGE_INVALID_PATH);
+                } else {
+                    current = child;
+                }
+            }
+            return current;
+        }
+
+        public FileEntity getSubDir(String dirName) {
+            return this.children.getOrDefault(dirName, null);
+        }
     }
 
     static class File implements FileEntity {
@@ -171,6 +192,7 @@ public class Solution {
     }
 
     static class CommandFactory {
+        public static final String ERROR_MESSAGE_UNRECOGNIZED_COMMAND = "Unrecognized command";
         public Command buildCommand(String commandAsText) {
             String[] splittedCommand = commandAsText.split(" ");
             String commandName = splittedCommand[0];
@@ -188,7 +210,7 @@ public class Solution {
                 case "touch":
                     return new TouchCommand(argument);
                 default:
-                    throw new RuntimeException("Unrecognized command");
+                    throw new RuntimeException(ERROR_MESSAGE_UNRECOGNIZED_COMMAND);
             }
         }
     }
@@ -209,13 +231,29 @@ public class Solution {
         }
     }
     static class CdCommand implements Command {
-        private String argument;
+        public static final String ERROR_MESSAGE_DIRECTORY_NOT_FOUND = "Directory not found";
+        public static final String GO_UP = "..";
+        public static final String ROOT = "root";
+        private String[] dirNames;
 
         public CdCommand(String argument) {
+            this.dirNames = argument.split("/");
         }
 
         public String execute(FileSystem fs) {
-            return "TBD";
+            if (GO_UP.equals(this.dirNames[0])) {
+                if (!ROOT.equals(fs.getCurrent().getName()) && fs.getCurrent().getParent() != null) {
+                    fs.setCurrent(fs.getCurrent().getParent());
+                }
+            } else {
+                Directory dir = (Directory) fs.getCurrent().getSubDir(dirNames);
+                if (dir != null) {
+                    fs.setCurrent(dir);
+                } else {
+                    return ERROR_MESSAGE_DIRECTORY_NOT_FOUND;
+                }
+            }
+            return "\n";
         }
     }
     static class MkdirCommand implements Command {
