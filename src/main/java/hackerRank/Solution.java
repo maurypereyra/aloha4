@@ -1,26 +1,30 @@
 package hackerRank;
 
-import java.io.*;
-import java.util.*;
-import java.text.*;
-import java.math.*;
-import java.util.regex.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 public class Solution {
     public static void main(String[] args) {
+        //THIS SOLUTION WAS THE ONE I COULD DELIVERY DURING THE FIRST 2 HS
         CommandProcessor commandProcessor = new CommandProcessor();
         commandProcessor.start();
     }
+
     static class CommandProcessor {
-        private FileSystem fileSystem;
-        private CommandFactory commandFactory;
-        private CommandExecutor commandExecutor;
+        private final FileSystem fileSystem;
+        private final CommandFactory commandFactory;
+        private final CommandExecutor commandExecutor;
 
         public CommandProcessor() {
             this.fileSystem = new FileSystem(new Directory("root", null));
             this.commandFactory = new CommandFactory();
             this.commandExecutor = new CommandExecutor();
         }
+
         public void start() {
             Scanner sc = new Scanner(System.in);
             String commandAsText = sc.nextLine();
@@ -37,8 +41,9 @@ public class Solution {
             }
         }
     }
+
     static class FileSystem {
-        private Directory root;
+        private final Directory root;
         private Directory current;
 
         public FileSystem(Directory root) {
@@ -157,8 +162,8 @@ public class Solution {
     static class File implements FileEntity {
         private static final long serialVersionUID = 1L;
 
-        private String name;
-        private Directory parent;
+        private final String name;
+        private final Directory parent;
 
         public File(String name, Directory parent) {
             this.name = name;
@@ -195,6 +200,7 @@ public class Solution {
 
     static class CommandFactory {
         public static final String ERROR_MESSAGE_UNRECOGNIZED_COMMAND = "Unrecognized command";
+
         public Command buildCommand(String commandAsText) {
             String[] splittedCommand = commandAsText.split(" ");
             String commandName = splittedCommand[0];
@@ -216,6 +222,7 @@ public class Solution {
             }
         }
     }
+
     static class CommandExecutor {
         public String execute(Command command, FileSystem fs) {
             return command.execute(fs);
@@ -232,11 +239,12 @@ public class Solution {
             return "TBD";
         }
     }
+
     static class CdCommand implements Command {
         public static final String ERROR_MESSAGE_DIRECTORY_NOT_FOUND = "Directory not found";
         public static final String GO_UP = "..";
         public static final String ROOT = "root";
-        private String[] dirNames;
+        private final String[] dirNames;
 
         public CdCommand(String argument) {
             this.dirNames = argument.split("/");
@@ -258,8 +266,9 @@ public class Solution {
             return "\n";
         }
     }
+
     static class MkdirCommand implements Command {
-        private String argument;
+        private final String argument;
         private static final String ERROR_MESSAGE_INVALID_NAME = "Invalid File or Folder Name";
         private static final String ERROR_MESSAGE_DIRECTORY_ALREADY_EXISTS = "Directory already exists";
 
@@ -275,8 +284,9 @@ public class Solution {
             return (success) ? "" : ERROR_MESSAGE_DIRECTORY_ALREADY_EXISTS;
         }
     }
+
     static class TouchCommand implements Command {
-        private String argument;
+        private final String argument;
         private static final String ERROR_MESSAGE_INVALID_NAME = "Invalid File or Folder Name";
         private static final String ERROR_MESSAGE_FILE_ALREDY_EXISTS = "File already exists";
 
@@ -299,7 +309,8 @@ public class Solution {
 
     static class PwdCommand implements Command {
 
-        public PwdCommand() {}
+        public PwdCommand() {
+        }
 
         public String execute(FileSystem fs) {
             return fs.getCurrent().getFullPath();
