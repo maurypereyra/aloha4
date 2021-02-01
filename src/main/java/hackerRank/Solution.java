@@ -1,3 +1,5 @@
+package hackerRank;
+
 import java.io.*;
 import java.util.*;
 import java.text.*;
@@ -5,7 +7,7 @@ import java.math.*;
 import java.util.regex.*;
 
 public class Solution {
-    public static void main(String args[] ) throws Exception {
+    public static void main(String[] args) {
         CommandProcessor commandProcessor = new CommandProcessor();
         commandProcessor.start();
     }
@@ -179,7 +181,7 @@ public class Solution {
         }
     }
 
-    static interface FileEntity {
+    interface FileEntity {
         String getName();
 
         Directory getParent();
@@ -291,7 +293,7 @@ public class Solution {
         }
     }
 
-    static interface Command {
+    interface Command {
         String execute(FileSystem fs);
     }
 
