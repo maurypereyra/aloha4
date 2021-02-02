@@ -6,10 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+/**
+ * THIS SOLUTION WAS THE ONE I COULD DELIVERY DURING THE FIRST 2 HS
+ */
 
 public class Solution {
     public static void main(String[] args) {
-        //THIS SOLUTION WAS THE ONE I COULD DELIVERY DURING THE FIRST 2 HS
         CommandProcessor commandProcessor = new CommandProcessor();
         commandProcessor.start();
     }
