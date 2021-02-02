@@ -1,8 +1,9 @@
 package hackerRank.fullSolution.entity;
 
-import hackerRank.fullSolution.entity.Directory;
+import java.io.Serializable;
 
-public class FileSystem {
+public class FileSystem implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Directory root;
     private Directory current;
 

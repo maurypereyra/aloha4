@@ -1,13 +1,15 @@
 package hackerRank.fullSolution.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Directory implements FileEntity {
-    public static final String ERROR_MESSAGE_INVALID_PATH = "Invalid path";
+public class Directory implements FileEntity, Serializable {
+    private static final long serialVersionUID = 1L;
+    private static final String ERROR_MESSAGE_INVALID_PATH = "Invalid path";
     private static final String SLASH = "/";
     private final String name;
     private final Directory parent;
@@ -95,5 +97,36 @@ public class Directory implements FileEntity {
 
     public FileEntity getSubDir(String dirName) {
         return this.children.getOrDefault(dirName, null);
+    }
+
+    public String printChildren(boolean recursive) {
+        StringBuilder sb = this.printRecursive(recursive, new StringBuilder());
+
+        if (sb.length() > 0) {
+            sb.setLength(sb.length() - 1);
+        }
+
+        return sb.toString();
+    }
+
+    private StringBuilder printRecursive(boolean recursive, StringBuilder sb) {
+        List<Directory> childrenDirectoriesToPrint = new ArrayList<>();
+        if (recursive && !children.isEmpty()) {
+            sb.append(this.getFullPath() + "\n");
+        }
+
+        for (Map.Entry<String, FileEntity> child : children.entrySet()) {
+            sb.append(child.getKey() + "\n");
+
+            if (recursive && child.getValue().getEntityType() == FileEntityType.Directory) {
+                childrenDirectoriesToPrint.add((Directory) child.getValue());
+            }
+        }
+
+        for (Directory dir : childrenDirectoriesToPrint) {
+            dir.printRecursive(true, sb);
+        }
+
+        return sb;
     }
 }
